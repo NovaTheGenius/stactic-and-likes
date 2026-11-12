@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% block title %}{{ school.name }} · {{ agency.name }}{% endblock %}
+{% block content %}
+
+<section class="school-hero">
+  <div class="school-hero-inner">
+    <nav class="breadcrumbs">
+      <a href="/destinations">Destinations</a> ›
+      <a href="/country/{{ country.id }}">{{ country.name }}</a> ›
+      <span>{{ school.name }}</span>
+    </nav>
+    <div class="school-hero-grid">
+      <div>
+        <p class="school-flag-lg">{{ country.flag }}</p>
+        <h1>{{ school.name }}</h1>
+        <p class="school-loc">📍 {{ school.city }}, {{ country.name }}
+          · {{ school.type }}{% if school.founded %} · est. {{ school.founded }}{% endif %}</p>
+        {% if school.ranking %}<p class="school-rank">🏅 {{ school.ranking }}</p>{% endif %}
+        <div class="tag-row" style="margin-top:1rem">
+          {% if school.scholarships %}<span class="chip chip-gold">Scholarships available</span>{% endif %}
+          <span class="chip chip-soft">{{ programs|length }} programs listed</span>
+        </div>
+        {% if school.website %}
+        <p class="school-web">🔗 <a href="https://{{ school.website }}" target="_blank" rel="noopener">{{ school.website }}</a></p>
+        {% endif %}
+      </div>
+      <aside class="school-aside">
+        <h3>Quick facts about {{ country.name }}</h3>
+        <dl>
+          <dt>Currency</dt><dd>{{ country.currency }}</dd>
+          <dt>Language</dt><dd>{{ country.language }}</dd>
+          <dt>Region</dt><dd>{{ country.region }}</dd>
+        </dl>
+        <a class="btn btn-primary" href="/contact">Ask us about this school</a>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="two-col">
+    <div class="main-col">
+      {% if school.description %}
+      <div class="prose">
+        <h2>About the school</h2>
+        <p>{{ school.description }}</p>
+      </div>
+      {% endif %}
+
+      <div class="prose">
+        <h2>Programs{% if programs %} at {{ school.name }}{% endif %}</h2>
+        <p class="section-sub">Fees shown are annual estimates for international students, checked September 2026. Always confirm with the school before you pay anything.</p>
+      </div>
+
+      <div class="prog-filters">
+        <select id="levelFilter">
+          <option value="">All levels</option>
+          {% for l in LEVELS %}<option>{{ l }}</option>{% endfor %}
+        </select>
+        <select id="fieldFilter">
+          <option value="">All fields</option>
+          {% for f in FIELDS %}<option>{{ f }}</option>{% endfor %}
+        </select>
+        <span id="progCount">{{ programs|length }} programs</span>
+      </div>
+
+      {% if programs %}
+      <div class="prog-list" id="progList">
+        {% for p in programs %}
+        <article class="prog-card" data-level="{{ p.study_level }}" data-field="{{ p.field }}">
+          <div class="prog-top">
+            <span class="chip chip-level">{{ p.study_level }}</span>
+            <span class="tag">{{ p.field }}</span>
+          </div>
+          <h3>{{ p.name }}</h3>
+          <div class="prog-meta">
+            <span>🕒 {{ p.duration_years }} year{{ 's' if p.duration_years != 1 }}</span>
+            <span>🗣 {{ p.language }}</span>
+            <span>📅 Intake: {{ p.intake }}</span>
+          </div>
+          <div class="prog-fee">
+            <strong>{% if p.tuition %}{{ p.tuition|money(p.currency) }}/yr{% else %}No tuition fee{% endif %}</strong>
+            {% if p.tuition %}<span class="fee-usd">≈ {{ p.tuition_usd|usd }}/yr</span>
+            {% else %}<span class="fee-usd">~€180/semester contribution only</span>{% endif %}
+          </div>
+          {% if p.notes %}<p class="prog-notes">{{ p.notes }}</p>{% endif %}
+        </article>
+        {% endfor %}
+      </div>
+      <div class="empty-state small" id="noProg" hidden>
+        <p>No programs match those filters. Try widening them.</p>
+      </div>
+      {% else %}
+      <div class="empty-state"><h3>No programs listed yet.</h3><p>Check back soon, or <a href="/contact">ask us directly</a>.</p></div>
+      {% endif %}
+    </div>
+
+    <aside class="side-col">
+      <div class="aside-card">
+        <h3>Visa note for {{ country.name }}</h3>
+        <p>{{ country.visa_note }}</p>
+      </div>
+      <div class="aside-card aside-cta">
+        <h3>Thinking about applying here?</h3>
+        <p>Send us your grades and budget, and we'll tell you within a day how realistic this school is for you.</p>
+        <a class="btn btn-primary" href="/contact">Talk to an advisor</a>
+      </div>
+    </aside>
+  </div>
+</section>
+
+{% endblock %}

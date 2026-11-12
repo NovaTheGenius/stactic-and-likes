@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}Study in {{ country.name }} · {{ agency.name }}{% endblock %}
+{% block content %}
+
+<section class="page-head page-head-flag">
+  <div class="page-head-inner">
+    <nav class="breadcrumbs">
+      <a href="/destinations">Destinations</a> › <span>{{ country.name }}</span>
+    </nav>
+    <p class="country-flag-xl">{{ country.flag }}</p>
+    <h1>Study in {{ country.name }}</h1>
+    <div class="quick-facts">
+      <span>💰 {{ country.currency }}</span>
+      <span>🗣 {{ country.language }}</span>
+      <span>🌍 {{ country.region }}</span>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="two-col">
+    <div class="main-col">
+      <div class="prose">
+        <h2>Why students choose {{ country.name }}</h2>
+        <p>{{ country.description }}</p>
+      </div>
+
+      <div class="prose">
+        <h2>Schools in {{ country.name }} ({{ schools|length }})</h2>
+      </div>
+
+      {% if schools %}
+      <div class="school-grid country-school-grid">
+        {% for s in schools %}
+        <a class="school-card reveal" href="/school/{{ s.id }}">
+          <h3>{{ s.name }}</h3>
+          <p class="school-loc">📍 {{ s.city }} · {{ s.type }}</p>
+          {% if s.ranking %}<p class="school-rank">🏅 {{ s.ranking }}</p>{% endif %}
+          <div class="school-card-foot">
+            <span class="fee">{% if s.min_fee %}from {{ s.min_fee|usd }}/yr{% else %}tuition-free{% endif %}</span>
+            <span class="pg-count">{{ s.program_count }} programs</span>
+          </div>
+        </a>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="empty-state"><h3>We're still adding schools here.</h3><p><a href="/contact">Ask us anyway</a>. We may know options that haven't made it into the database yet.</p></div>
+      {% endif %}
+    </div>
+
+    <aside class="side-col">
+      <div class="aside-card">
+        <h3>Visa: the short version</h3>
+        <p>{{ country.visa_note }}</p>
+      </div>
+      <div class="aside-card aside-cta">
+        <h3>Is {{ country.name }} right for you?</h3>
+        <p>It depends on your budget and your grades. Tell us both, and we'll give you a straight answer.</p>
+        <a class="btn btn-primary" href="/contact">Ask an advisor</a>
+      </div>
+    </aside>
+  </div>
+</section>
+
+{% endblock %}

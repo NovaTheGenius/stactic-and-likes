@@ -1,0 +1,87 @@
+{% extends "admin/base.html" %}
+{% block title %}Dashboard · Admin{% endblock %}
+{% block content %}
+
+<div class="admin-head">
+  <div>
+    <h1>Good day 👋</h1>
+    <p>Here's what's happening across the database.</p>
+  </div>
+  <div class="quick-adds">
+    <a class="btn btn-outline" href="/admin/countries/new">+ Add country</a>
+    <a class="btn btn-outline" href="/admin/schools/new">+ Add school</a>
+    <a class="btn btn-outline" href="/admin/programs/new">+ Add program</a>
+  </div>
+</div>
+
+<div class="stat-cards">
+  <a class="stat-card" href="/admin/countries">
+    <span class="stat-num">{{ stats.countries }}</span>
+    <span class="stat-lbl">Countries</span>
+  </a>
+  <a class="stat-card" href="/admin/schools">
+    <span class="stat-num">{{ stats.schools }}</span>
+    <span class="stat-lbl">Schools</span>
+  </a>
+  <a class="stat-card" href="/admin/programs">
+    <span class="stat-num">{{ stats.programs }}</span>
+    <span class="stat-lbl">Programs</span>
+  </a>
+  <a class="stat-card {{ 'stat-hot' if stats.new_inquiries }}" href="/admin/inquiries">
+    <span class="stat-num">{{ stats.inquiries }}</span>
+    <span class="stat-lbl">Inquiries{% if stats.new_inquiries %} <em>({{ stats.new_inquiries }} new)</em>{% endif %}</span>
+  </a>
+</div>
+
+<div class="dash-grid">
+  <div class="panel">
+    <div class="panel-head">
+      <h2>Recent inquiries</h2>
+      <a href="/admin/inquiries">View all →</a>
+    </div>
+    {% if recent %}
+    <table class="admin-table">
+      <thead><tr><th>Name</th><th>Destination</th><th>Level</th><th>Status</th><th>Date</th></tr></thead>
+      <tbody>
+        {% for r in recent %}
+        <tr>
+          <td><strong>{{ r.name }}</strong><br><small>{{ r.email }}</small></td>
+          <td>{{ r.destination or 'n/a' }}</td>
+          <td>{{ r.level or 'n/a' }}</td>
+          <td><span class="status status-{{ r.status|lower }}">{{ r.status }}</span></td>
+          <td>{{ r.created_at[:10] }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p class="panel-empty">No inquiries yet. Share the site and they'll come.</p>
+    {% endif %}
+  </div>
+
+  <div class="panel">
+    <div class="panel-head"><h2>Programs by study level</h2></div>
+    {% set max_level = by_level[0].n if by_level else 1 %}
+    {% for row in by_level %}
+    <div class="bar-row">
+      <span class="bar-label">{{ row.study_level }}</span>
+      <div class="bar-track"><div class="bar-fill" style="width:{{ (row.n / max_level * 100)|round }}%"></div></div>
+      <span class="bar-num">{{ row.n }}</span>
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="panel">
+    <div class="panel-head"><h2>Schools per country (top 6)</h2></div>
+    {% set max_c = by_country[0].n if by_country else 1 %}
+    {% for row in by_country %}
+    <div class="bar-row">
+      <span class="bar-label">{{ row.flag }} {{ row.name }}</span>
+      <div class="bar-track"><div class="bar-fill gold" style="width:{{ (row.n / max_c * 100)|round }}%"></div></div>
+      <span class="bar-num">{{ row.n }}</span>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+{% endblock %}

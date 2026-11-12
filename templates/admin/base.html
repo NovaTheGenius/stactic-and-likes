@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}Admin · Pathway{% endblock %}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body class="admin-body">
+
+<aside class="admin-side">
+  <a class="brand admin-brand" href="/admin">Pathway <span class="admin-tag">admin</span></a>
+  <nav>
+    <a href="/admin" class="{{ 'active' if request.path == '/admin' }}">📊 Dashboard</a>
+    <a href="/admin/countries" class="{{ 'active' if request.path.startswith('/admin/countries') }}">🌍 Countries</a>
+    <a href="/admin/schools" class="{{ 'active' if request.path.startswith('/admin/schools') }}">🏫 Schools</a>
+    <a href="/admin/programs" class="{{ 'active' if request.path.startswith('/admin/programs') }}">📚 Programs</a>
+    <a href="/admin/inquiries" class="{{ 'active' if request.path.startswith('/admin/inquiries') }}">📥 Inquiries</a>
+  </nav>
+  <div class="admin-side-foot">
+    <a href="/" target="_blank">↗ View site</a>
+    <a href="/admin/logout">Sign out ({{ session.get('admin_user', 'admin') }})</a>
+  </div>
+</aside>
+
+<div class="admin-main" data-auth="{{ auth_token }}">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="flash {{ category }}">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+  {% block content %}{% endblock %}
+</div>
+
+{% if auth_token %}
+<script>
+  // Cookie-less auth (embedded previews): keep the token on every admin URL.
+  (function () {
+    var token = {{ auth_token|tojson }};
+    document.querySelectorAll('a[href^="/admin"], form[action^="/admin"]').forEach(function (el) {
+      var attr = el.tagName === "A" ? "href" : "action";
+      var url = el.getAttribute(attr);
+      el.setAttribute(attr, url + (url.indexOf("?") === -1 ? "?" : "&") + "token=" + encodeURIComponent(token));
+    });
+  })();
+</script>
+{% endif %}
+
+</body>
+</html>

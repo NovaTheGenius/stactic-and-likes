@@ -1,0 +1,345 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- ══ HERO ══ -->
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-copy">
+      <p class="hero-kicker">✦ A small agency in Lagos. Students all over the world.</p>
+      <h1>Study abroad,<br><em>minus the guesswork.</em></h1>
+      <p class="hero-sub">
+        We're a team of advisors who studied abroad ourselves and got a few
+        things wrong the first time. Now we help students compare real tuition
+        figures, shortlist schools that fit their budget, and survive the
+        paperwork without losing their minds.
+      </p>
+
+      <form class="hero-search" action="/explore" method="get" aria-label="Quick school search">
+        <label>
+          <span>Where to?</span>
+          <select name="country">
+            <option value="">Anywhere</option>
+            {% for c in countries %}<option value="{{ c.id }}">{{ c.flag }} {{ c.name }}</option>{% endfor %}
+          </select>
+        </label>
+        <label>
+          <span>Study level</span>
+          <select name="level">
+            <option value="">Any level</option>
+            {% for l in LEVELS %}<option>{{ l }}</option>{% endfor %}
+          </select>
+        </label>
+        <label>
+          <span>Budget (per year)</span>
+          <select name="budget">
+            <option value="">Any budget</option>
+            {% for value, label in BUDGETS %}<option value="{{ value }}">{{ label }}</option>{% endfor %}
+          </select>
+        </label>
+        <button class="btn btn-primary" type="submit">Search schools →</button>
+      </form>
+
+      <p class="hero-fineprint">
+        Free to browse · no account needed · a human replies within one working day
+      </p>
+    </div>
+
+    <div class="hero-visual">
+      <img src="/static/img/hero.png" alt="Students arriving at a campus abroad" class="hero-img">
+      <div class="sticky-note note-1">Adaeze got into Galway<br>with a €3,000 scholarship 🎉</div>
+      <div class="sticky-note note-2">Tobi's visa came through<br>in 5 weeks flat ✈️</div>
+    </div>
+  </div>
+
+  <div class="stat-strip">
+    <div><strong>{{ stats.placed }}+</strong><span>students placed since {{ agency.founded }}</span></div>
+    <div><strong>{{ stats.schools }}</strong><span>schools in our database</span></div>
+    <div><strong>{{ stats.programs }}</strong><span>programs you can compare</span></div>
+    <div><strong>{{ stats.countries }}</strong><span>destination countries</span></div>
+  </div>
+</section>
+
+<!-- ══ DESTINATIONS ══ -->
+<section class="section" id="destinations">
+  <div class="section-head">
+    <div>
+      <p class="section-label">Destinations</p>
+      <h2>Where do you want to wake up?</h2>
+      <p class="section-sub">Every country has a personality, and a price tag. Start with the ones that feel like you.</p>
+    </div>
+    <a class="btn btn-outline" href="/destinations">See all {{ stats.countries }} countries</a>
+  </div>
+
+  <div class="dest-grid">
+    {% for c in destinations %}
+    <a class="dest-card reveal" href="/country/{{ c.id }}">
+      <span class="dest-flag">{{ c.flag }}</span>
+      <div class="dest-info">
+        <h3>{{ c.name }}</h3>
+        <p>{{ c.school_count }} school{{ 's' if c.school_count != 1 }} ·
+          {% if c.min_fee %}from {{ c.min_fee|usd }}/yr{% else %}tuition-free options{% endif %}
+        </p>
+      </div>
+      <span class="dest-arrow">→</span>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- ══ FEATURED SCHOOLS ══ -->
+<section class="section section-tinted" id="schools">
+  <div class="section-head">
+    <div>
+      <p class="section-label">Featured schools</p>
+      <h2>A few schools our students keep choosing</h2>
+      <p class="section-sub">Not the flashiest list, just places where our students actually land, thrive, and tell us to send the next batch.</p>
+    </div>
+    <a class="btn btn-outline" href="/explore">Browse all {{ stats.schools }} schools</a>
+  </div>
+
+  <div class="school-grid">
+    {% for s in featured %}
+    <a class="school-card reveal" href="/school/{{ s.id }}">
+      <div class="school-card-top">
+        <span class="school-flag">{{ s.flag }}</span>
+        {% if s.scholarships %}<span class="chip chip-gold">Scholarships</span>{% endif %}
+      </div>
+      <h3>{{ s.name }}</h3>
+      <p class="school-loc">📍 {{ s.city }}, {{ s.country_name }} · {{ s.type }}</p>
+      {% if s.ranking %}<p class="school-rank">🏅 {{ s.ranking }}</p>{% endif %}
+      <div class="school-card-foot">
+        <span class="fee">
+          {% if s.min_fee %}from {{ s.min_fee|usd }}/yr{% else %}tuition-free{% endif %}
+        </span>
+        <span class="pg-count">{{ s.program_count }} programs</span>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- ══ HOW IT WORKS ══ -->
+<section class="section section-dark" id="how">
+  <div class="section-head">
+    <div>
+      <p class="section-label label-gold">How it works</p>
+      <h2>The honest version of the process</h2>
+      <p class="section-sub sub-light">No jargon, no “we’ll handle everything” promises we can’t keep. Here’s what actually happens when you work with us.</p>
+    </div>
+  </div>
+
+  <div class="steps">
+    <div class="step reveal">
+      <span class="step-num">01</span>
+      <h3>Tell us your story</h3>
+      <p>Your grades, your budget (be honest, we don't judge), your dream country. One 15-minute call or a few WhatsApp messages is enough.</p>
+    </div>
+    <div class="step reveal">
+      <span class="step-num">02</span>
+      <h3>We shortlist real options</h3>
+      <p>No copy-paste lists. Every school we suggest fits your budget <em>and</em> your transcript, and we tell you upfront when something is a reach.</p>
+    </div>
+    <div class="step reveal">
+      <span class="step-num">03</span>
+      <h3>We apply together</h3>
+      <p>We review your statement of purpose, chase transcripts, double-check every deadline, and submit. You stay in the loop the whole way.</p>
+    </div>
+    <div class="step reveal">
+      <span class="step-num">04</span>
+      <h3>You fly out</h3>
+      <p>Visa interview prep (we rehearse the tough questions), accommodation guidance, and someone picking you up where we can arrange it.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══ SERVICES ══ -->
+<section class="section" id="services">
+  <div class="section-head">
+    <div>
+      <p class="section-label">What we do</p>
+      <h2>More than just applications</h2>
+      <p class="section-sub">Most agencies stop at admission. That's the easy part. The hard part starts after.</p>
+    </div>
+  </div>
+
+  <div class="svc-grid">
+    <div class="svc-card reveal">
+      <div class="svc-icon">🔍</div>
+      <h3>School &amp; program search</h3>
+      <p>Filter {{ stats.schools }} schools across {{ stats.countries }} countries by budget, study level and field. We add the context websites leave out.</p>
+    </div>
+    <div class="svc-card reveal">
+      <div class="svc-icon">🎓</div>
+      <h3>Scholarship matching</h3>
+      <p>Stipendium Hungaricum, Lester B. Pearson, Chevening, school-specific waivers. We track the deadlines so you don't miss the quiet ones.</p>
+    </div>
+    <div class="svc-card reveal">
+      <div class="svc-icon">📝</div>
+      <h3>Application &amp; SOP review</h3>
+      <p>We edit your essays until they sound like you on your best day, and check every document before it goes in.</p>
+    </div>
+    <div class="svc-card reveal">
+      <div class="svc-icon">🛂</div>
+      <h3>Visa preparation</h3>
+      <p>Proof-of-funds guidance, embassy forms, and mock interviews. We've sat through enough refusals to know what officers ask.</p>
+    </div>
+    <div class="svc-card reveal">
+      <div class="svc-icon">🏠</div>
+      <h3>Arrival &amp; settling in</h3>
+      <p>Accommodation leads, airport pickup where possible, and a WhatsApp group with students already in your city.</p>
+    </div>
+    <div class="svc-card reveal">
+      <div class="svc-icon">💬</div>
+      <h3>Honest advice, even when it hurts</h3>
+      <p>If a country doesn't fit your budget this year, we'll say so, and help you plan a route that does.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══ STORIES ══ -->
+<section class="section section-dark" id="stories">
+  <div class="section-head">
+    <div>
+      <p class="section-label label-gold">Student stories</p>
+      <h2>Real people, real offers</h2>
+      <p class="section-sub sub-light">In their own words: the good, the stressful, and the airport moments.</p>
+    </div>
+  </div>
+
+  <div class="story-grid">
+    <figure class="story-card reveal">
+      <div class="stars">★★★★★</div>
+      <blockquote>“I'd been burned by an agent before, so I came in skeptical. Pathway showed me the actual fee breakdown for Galway (tuition, insurance, the lot) before asking for a kobo. I got a €3,000 scholarship I didn't even know existed.”</blockquote>
+      <figcaption>
+        <span class="story-avatar">👩🏾‍🎓</span>
+        <span><strong>Chiamaka A.</strong><br>MSc Public Health · University of Galway, Ireland</span>
+      </figcaption>
+    </figure>
+    <figure class="story-card reveal">
+      <div class="stars">★★★★★</div>
+      <blockquote>“My budget was $15k a year and everyone said Canada was impossible. Pathway pointed me at Manitoba, helped me with the GIC and study permit, and I landed in Winnipeg last September. Total process: about 5 months.”</blockquote>
+      <figcaption>
+        <span class="story-avatar">👨🏿‍💻</span>
+        <span><strong>Tobi O.</strong><br>BSc Computer Science · University of Manitoba, Canada</span>
+      </figcaption>
+    </figure>
+    <figure class="story-card reveal">
+      <div class="stars">★★★★★</div>
+      <blockquote>“Cyprus wasn't even on my radar until they showed me the numbers: €5,500 a year for an engineering degree, in English. I'm in my second year now and my younger cousin is applying through them too.”</blockquote>
+      <figcaption>
+        <span class="story-avatar">👩🏽‍🔬</span>
+        <span><strong>Fatima B.</strong><br>BSc Computer Engineering · EMU, North Cyprus</span>
+      </figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ══ COSTS ══ -->
+<section class="section section-tinted" id="costs">
+  <div class="section-head centered">
+    <p class="section-label">What it costs</p>
+    <h2>We charge like a service, not a lottery</h2>
+    <p class="section-sub">Browsing is free forever. When you're ready to apply, we agree on a fee upfront. No surprises, no “processing charges” invented later.</p>
+  </div>
+
+  <div class="price-grid">
+    <div class="price-card reveal">
+      <p class="price-tier">Browse &amp; research</p>
+      <p class="price-amount">Free</p>
+      <p class="price-period">forever, no card required</p>
+      <ul>
+        <li>Search every school and program here</li>
+        <li>Filter by budget, level and field</li>
+        <li>Read our guides and destination notes</li>
+        <li>Email us questions anytime</li>
+      </ul>
+      <a class="btn btn-outline" href="/explore">Start searching</a>
+    </div>
+    <div class="price-card featured reveal">
+      <span class="price-badge">Most popular</span>
+      <p class="price-tier">Application support</p>
+      <p class="price-amount">$150</p>
+      <p class="price-period">per application, agreed upfront</p>
+      <ul>
+        <li>Personal shortlist based on your profile</li>
+        <li>SOP and CV editing (unlimited rounds)</li>
+        <li>Document checklist &amp; deadline management</li>
+        <li>Scholarship applications included</li>
+      </ul>
+      <a class="btn btn-gold" href="/contact">Start an application</a>
+    </div>
+    <div class="price-card reveal">
+      <p class="price-tier">Full journey</p>
+      <p class="price-amount">Custom</p>
+      <p class="price-period">flat fee, quoted after your consult</p>
+      <ul>
+        <li>A dedicated advisor from start to finish</li>
+        <li>Multiple applications managed for you</li>
+        <li>Visa interview prep &amp; mock sessions</li>
+        <li>Arrival support in your destination city</li>
+      </ul>
+      <a class="btn btn-primary" href="/contact">Book a free consult</a>
+    </div>
+  </div>
+
+  <p class="price-note">
+    <strong>A note on honesty:</strong> some partner schools pay us a commission when you enrol.
+    When that happens, our service to you is often free, and we'll always tell you when it's the case.
+  </p>
+</section>
+
+<!-- ══ GUIDES ══ -->
+<section class="section" id="guides">
+  <div class="section-head">
+    <div>
+      <p class="section-label">Guides</p>
+      <h2>Things we wish someone told us</h2>
+      <p class="section-sub">Short, practical reads. No fluff, no recycled Wikipedia.</p>
+    </div>
+  </div>
+
+  <div class="guide-grid">
+    <article class="guide-card reveal">
+      <div class="guide-img gi-1">🇬🇧</div>
+      <div>
+        <p class="guide-tag">Money</p>
+        <h3>How much does the UK <em>actually</em> cost in 2026?</h3>
+        <p>Tuition is only half of it. Here's a realistic Lagos-to-London budget, down to the TB test fee.</p>
+        <span class="guide-meta">8 min read · updated Sep 2026</span>
+      </div>
+    </article>
+    <article class="guide-card reveal">
+      <div class="guide-img gi-2">🏦</div>
+      <div>
+        <p class="guide-tag">Visas</p>
+        <h3>Proof of funds: what embassies really check</h3>
+        <p>The 28-day rule, sponsor letters, and the three mistakes that get Nigerian applications refused most.</p>
+        <span class="guide-meta">6 min read · updated Sep 2026</span>
+      </div>
+    </article>
+    <article class="guide-card reveal">
+      <div class="guide-img gi-3">🎓</div>
+      <div>
+        <p class="guide-tag">Scholarships</p>
+        <h3>10 scholarships African students keep missing</h3>
+        <p>Half of them have no age limit and no application fee. Bookmark this before the next deadline cycle.</p>
+        <span class="guide-meta">9 min read · updated Aug 2026</span>
+      </div>
+    </article>
+  </div>
+</section>
+
+<!-- ══ CTA ══ -->
+<section class="cta-band">
+  <div class="cta-inner reveal">
+    <h2>Talk to a human, not a chatbot.</h2>
+    <p>Tell us where you are academically and financially. We'll tell you, honestly, what's possible, and what it takes.</p>
+    <div class="cta-actions">
+      <a class="btn btn-primary btn-lg" href="/contact">Book a free consult</a>
+      <a class="btn btn-outline-light btn-lg" href="https://wa.me/{{ agency.whatsapp }}" target="_blank" rel="noopener">Chat on WhatsApp</a>
+    </div>
+    <p class="sticky-note note-cta">No pressure. No “urgent 2k”. Just answers. ☕</p>
+  </div>
+</section>
+
+{% endblock %}

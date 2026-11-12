@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}Talk to us · {{ agency.name }}{% endblock %}
+{% block content %}
+
+<section class="page-head">
+  <div class="page-head-inner">
+    <p class="section-label">Contact</p>
+    <h1>Tell us where you're headed</h1>
+    <p class="section-sub">Share as much or as little as you like: grades, budget, dream country, worries. A real advisor reads every message.</p>
+  </div>
+</section>
+
+<section class="section section-flat">
+  <div class="contact-grid">
+    <form class="contact-form" method="post" action="/contact">
+      <div class="form-row">
+        <label>
+          <span>Your name *</span>
+          <input type="text" name="name" required placeholder="e.g. Ada Nwosu" value="{{ request.form.get('name', '') }}">
+        </label>
+        <label>
+          <span>Email *</span>
+          <input type="email" name="email" required placeholder="you@example.com" value="{{ request.form.get('email', '') }}">
+        </label>
+      </div>
+      <div class="form-row">
+        <label>
+          <span>Phone / WhatsApp</span>
+          <input type="text" name="phone" placeholder="+234 …" value="{{ request.form.get('phone', '') }}">
+        </label>
+        <label>
+          <span>Where are you thinking?</span>
+          <select name="destination">
+            <option value="">Not sure yet, help me decide</option>
+            {% for c in countries %}<option {% if request.form.get('destination') == c.name %}selected{% endif %}>{{ c.flag }} {{ c.name }}</option>{% endfor %}
+          </select>
+        </label>
+      </div>
+      <label>
+        <span>Study level</span>
+        <select name="level">
+          <option value="">Not sure yet</option>
+          {% for l in LEVELS %}<option {% if request.form.get('level') == l %}selected{% endif %}>{{ l }}</option>{% endfor %}
+        </select>
+      </label>
+      <label>
+        <span>Your message *</span>
+        <textarea name="message" rows="5" required placeholder="e.g. I have a 3.2 CGPA in Biochemistry from UNN, budget is around $12k/year, interested in a master's…">{{ request.form.get('message', '') }}</textarea>
+      </label>
+      <button class="btn btn-primary btn-lg" type="submit">Send message</button>
+      <p class="form-note">* required. We reply within one working day, usually sooner. No spam, no sharing your details.</p>
+    </form>
+
+    <aside class="contact-aside">
+      <div class="aside-card">
+        <h3>Prefer to talk?</h3>
+        <p>Call or WhatsApp us: <strong>{{ agency.phone }}</strong><br>
+        Email: <a href="mailto:{{ agency.email }}">{{ agency.email }}</a></p>
+        <p>{{ agency.address }}</p>
+        <a class="btn btn-outline" href="https://wa.me/{{ agency.whatsapp }}" target="_blank" rel="noopener">Open WhatsApp</a>
+      </div>
+      <div class="aside-card">
+        <h3>What happens next</h3>
+        <ol class="next-steps">
+          <li>We read your message (same day).</li>
+          <li>We reply with honest first impressions + a few questions.</li>
+          <li>If it fits, we book a free 15-minute consult call.</li>
+          <li>You decide. No pressure, ever.</li>
+        </ol>
+      </div>
+      <div class="aside-card aside-quote">
+        <p>“They told me Canada wasn't realistic for my budget <em>this year</em>, and helped me plan for next year instead. That honesty is why I recommend them.”</p>
+        <span>Kelechi, now at TU Munich</span>
+      </div>
+    </aside>
+  </div>
+</section>
+
+{% endblock %}

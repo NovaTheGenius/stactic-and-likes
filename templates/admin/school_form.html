@@ -1,0 +1,77 @@
+{% extends "admin/base.html" %}
+{% block title %}{{ 'Edit' if item else 'New' }} school · Admin{% endblock %}
+{% block content %}
+
+<div class="admin-head">
+  <div>
+    <h1>{{ 'Edit' if item else 'Add a' }} school{% if item %}: {{ item.name }}{% endif %}</h1>
+    <p>Featured schools appear on the homepage.</p>
+  </div>
+  <a class="btn btn-ghost" href="/admin/schools">← Back to schools</a>
+</div>
+
+<form class="admin-form" method="post">
+  <div class="form-row">
+    <label>
+      <span>School name *</span>
+      <input type="text" name="name" required value="{{ item.name if item else '' }}" placeholder="e.g. University of Galway">
+    </label>
+    <label>
+      <span>Country *</span>
+      <select name="country_id" required>
+        <option value="">Choose a country…</option>
+        {% for c in countries %}
+        <option value="{{ c.id }}" {% if item and item.country_id == c.id %}selected{% endif %}>{{ c.flag }} {{ c.name }}</option>
+        {% endfor %}
+      </select>
+    </label>
+  </div>
+  <div class="form-row">
+    <label>
+      <span>City</span>
+      <input type="text" name="city" value="{{ item.city if item else '' }}" placeholder="e.g. Galway">
+    </label>
+    <label>
+      <span>Type</span>
+      <select name="type">
+        {% for t in ['Public', 'Private', 'Public college', 'University of applied sciences'] %}
+        <option {% if item and item.type == t %}selected{% endif %}>{{ t }}</option>
+        {% endfor %}
+      </select>
+    </label>
+  </div>
+  <div class="form-row">
+    <label>
+      <span>Founded (year)</span>
+      <input type="number" name="founded" min="1000" max="2100" value="{{ item.founded if item and item.founded else '' }}">
+    </label>
+    <label>
+      <span>Ranking / badge</span>
+      <input type="text" name="ranking" value="{{ item.ranking if item else '' }}" placeholder="e.g. Top 60 worldwide">
+    </label>
+  </div>
+  <label>
+    <span>Website (no https://)</span>
+    <input type="text" name="website" value="{{ item.website if item else '' }}" placeholder="e.g. universityofgalway.ie">
+  </label>
+  <label>
+    <span>Description</span>
+    <textarea name="description" rows="4" placeholder="What should a student actually know about this place?">{{ item.description if item else '' }}</textarea>
+  </label>
+  <div class="form-row">
+    <label class="check-label">
+      <input type="checkbox" name="scholarships" value="1" {% if item and item.scholarships %}checked{% endif %}>
+      <span>Scholarships available</span>
+    </label>
+    <label class="check-label">
+      <input type="checkbox" name="is_featured" value="1" {% if item and item.is_featured %}checked{% endif %}>
+      <span>Featured on homepage</span>
+    </label>
+  </div>
+  <div class="form-actions">
+    <button class="btn btn-primary btn-lg" type="submit">{{ 'Save changes' if item else 'Add school' }}</button>
+    <a class="btn btn-ghost" href="/admin/schools">Cancel</a>
+  </div>
+</form>
+
+{% endblock %}

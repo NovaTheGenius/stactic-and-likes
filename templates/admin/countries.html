@@ -1,0 +1,40 @@
+{% extends "admin/base.html" %}
+{% block title %}Countries · Admin{% endblock %}
+{% block content %}
+
+<div class="admin-head">
+  <div>
+    <h1>Countries</h1>
+    <p>{{ rows|length }} destinations. Deleting a country removes its schools and programs too.</p>
+  </div>
+  <a class="btn btn-primary" href="/admin/countries/new">+ Add country</a>
+</div>
+
+<table class="admin-table">
+  <thead>
+    <tr><th></th><th>Name</th><th>Region</th><th>Currency</th><th>Schools</th><th class="th-actions"></th></tr>
+  </thead>
+  <tbody>
+    {% for r in rows %}
+    <tr>
+      <td class="td-flag">{{ r.flag }}</td>
+      <td><strong>{{ r.name }}</strong></td>
+      <td>{{ r.region }}</td>
+      <td>{{ r.currency }}</td>
+      <td>{{ r.school_count }}</td>
+      <td class="td-actions">
+        <a class="btn btn-sm btn-ghost" href="/country/{{ r.id }}" target="_blank">View</a>
+        <a class="btn btn-sm btn-ghost" href="/admin/countries/{{ r.id }}/edit">Edit</a>
+        <form method="post" action="/admin/countries/{{ r.id }}/delete" class="inline-form"
+              onsubmit="return confirm('Delete {{ r.name }} and ALL its schools and programs? This cannot be undone.')">
+          <button class="btn btn-sm btn-danger" type="submit">Delete</button>
+        </form>
+      </td>
+    </tr>
+    {% else %}
+    <tr><td colspan="6" class="panel-empty">No countries yet. Add your first destination.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}

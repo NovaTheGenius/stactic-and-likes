@@ -1,0 +1,52 @@
+{% extends "admin/base.html" %}
+{% block title %}{{ 'Edit' if item else 'New' }} country · Admin{% endblock %}
+{% block content %}
+
+<div class="admin-head">
+  <div>
+    <h1>{{ 'Edit' if item else 'Add a' }} country{% if item %}: {{ item.name }}{% endif %}</h1>
+    <p>The description and visa note appear on the public country page.</p>
+  </div>
+  <a class="btn btn-ghost" href="/admin/countries">← Back to countries</a>
+</div>
+
+<form class="admin-form" method="post">
+  <div class="form-row">
+    <label>
+      <span>Name *</span>
+      <input type="text" name="name" required value="{{ item.name if item else '' }}" placeholder="e.g. Ireland">
+    </label>
+    <label>
+      <span>Flag emoji</span>
+      <input type="text" name="flag" value="{{ item.flag if item else '🏳️' }}" maxlength="8">
+    </label>
+  </div>
+  <div class="form-row">
+    <label>
+      <span>Region</span>
+      <input type="text" name="region" value="{{ item.region if item else '' }}" placeholder="e.g. Europe">
+    </label>
+    <label>
+      <span>Currency</span>
+      <input type="text" name="currency" value="{{ item.currency if item else '' }}" placeholder="e.g. EUR (€)">
+    </label>
+  </div>
+  <label>
+    <span>Language</span>
+    <input type="text" name="language" value="{{ item.language if item else '' }}" placeholder="e.g. English">
+  </label>
+  <label>
+    <span>Description (why study here?)</span>
+    <textarea name="description" rows="4" placeholder="Write like you're explaining it to a student over coffee…">{{ item.description if item else '' }}</textarea>
+  </label>
+  <label>
+    <span>Visa note</span>
+    <textarea name="visa_note" rows="3" placeholder="The short, practical version of the visa process…">{{ item.visa_note if item else '' }}</textarea>
+  </label>
+  <div class="form-actions">
+    <button class="btn btn-primary btn-lg" type="submit">{{ 'Save changes' if item else 'Add country' }}</button>
+    <a class="btn btn-ghost" href="/admin/countries">Cancel</a>
+  </div>
+</form>
+
+{% endblock %}

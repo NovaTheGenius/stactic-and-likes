@@ -1,0 +1,49 @@
+{% extends "admin/base.html" %}
+{% block title %}Programs · Admin{% endblock %}
+{% block content %}
+
+<div class="admin-head">
+  <div>
+    <h1>Programs</h1>
+    <p>{{ rows|length }} programs{% if f %} at the selected school{% endif %}.</p>
+  </div>
+  <a class="btn btn-primary" href="/admin/programs/new">+ Add program</a>
+</div>
+
+<form class="filter-inline" method="get" action="/admin/programs">
+  <label>Filter by school
+    <select name="school" onchange="this.form.submit()">
+      <option value="">All schools</option>
+      {% for s in schools %}<option value="{{ s.id }}" {% if f == s.id|string %}selected{% endif %}>{{ s.name }}</option>{% endfor %}
+    </select>
+  </label>
+</form>
+
+<table class="admin-table">
+  <thead>
+    <tr><th>Program</th><th>School</th><th>Level</th><th>Field</th><th>Tuition / yr</th><th>≈ USD</th><th class="th-actions"></th></tr>
+  </thead>
+  <tbody>
+    {% for r in rows %}
+    <tr>
+      <td><strong>{{ r.name }}</strong></td>
+      <td>{{ r.school_name }}</td>
+      <td><span class="chip chip-level">{{ r.study_level }}</span></td>
+      <td>{{ r.field }}</td>
+      <td>{% if r.tuition %}{{ r.tuition|money(r.currency) }}{% else %}free{% endif %}</td>
+      <td>{% if r.tuition_usd %}{{ r.tuition_usd|usd }}{% else %}free{% endif %}</td>
+      <td class="td-actions">
+        <a class="btn btn-sm btn-ghost" href="/admin/programs/{{ r.id }}/edit">Edit</a>
+        <form method="post" action="/admin/programs/{{ r.id }}/delete" class="inline-form"
+              onsubmit="return confirm('Delete this program?')">
+          <button class="btn btn-sm btn-danger" type="submit">Delete</button>
+        </form>
+      </td>
+    </tr>
+    {% else %}
+    <tr><td colspan="7" class="panel-empty">No programs found.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}

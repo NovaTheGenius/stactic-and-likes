@@ -1,0 +1,50 @@
+{% extends "admin/base.html" %}
+{% block title %}Schools · Admin{% endblock %}
+{% block content %}
+
+<div class="admin-head">
+  <div>
+    <h1>Schools</h1>
+    <p>{{ rows|length }} schools{% if f %} in the selected country{% endif %}. Deleting a school also removes its programs.</p>
+  </div>
+  <a class="btn btn-primary" href="/admin/schools/new">+ Add school</a>
+</div>
+
+<form class="filter-inline" method="get" action="/admin/schools">
+  <label>Filter by country
+    <select name="country" onchange="this.form.submit()">
+      <option value="">All countries</option>
+      {% for c in countries %}<option value="{{ c.id }}" {% if f == c.id|string %}selected{% endif %}>{{ c.flag }} {{ c.name }}</option>{% endfor %}
+    </select>
+  </label>
+</form>
+
+<table class="admin-table">
+  <thead>
+    <tr><th>School</th><th>Country</th><th>Type</th><th>Programs</th><th>Scholarships</th><th>Featured</th><th class="th-actions"></th></tr>
+  </thead>
+  <tbody>
+    {% for r in rows %}
+    <tr>
+      <td><strong>{{ r.name }}</strong><br><small>{{ r.city }}</small></td>
+      <td>{{ r.flag }} {{ r.country_name }}</td>
+      <td>{{ r.type }}</td>
+      <td>{{ r.program_count }}</td>
+      <td>{{ '✅' if r.scholarships else 'No' }}</td>
+      <td>{{ '⭐' if r.is_featured else 'No' }}</td>
+      <td class="td-actions">
+        <a class="btn btn-sm btn-ghost" href="/school/{{ r.id }}" target="_blank">View</a>
+        <a class="btn btn-sm btn-ghost" href="/admin/schools/{{ r.id }}/edit">Edit</a>
+        <form method="post" action="/admin/schools/{{ r.id }}/delete" class="inline-form"
+              onsubmit="return confirm('Delete {{ r.name }} and all its programs?')">
+          <button class="btn btn-sm btn-danger" type="submit">Delete</button>
+        </form>
+      </td>
+    </tr>
+    {% else %}
+    <tr><td colspan="7" class="panel-empty">No schools found.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}

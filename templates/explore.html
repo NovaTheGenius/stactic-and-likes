@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+{% block title %}Find a school · {{ agency.name }}{% endblock %}
+{% block content %}
+
+<section class="page-head">
+  <div class="page-head-inner">
+    <p class="section-label">School search</p>
+    <h1>Find a school that fits your life, not just your dreams</h1>
+    <p class="section-sub">Filter by country, study level, field and, most importantly, what you can actually pay.</p>
+  </div>
+</section>
+
+<section class="explore">
+  <form class="filter-bar" action="/explore" method="get" aria-label="Filters">
+    <label class="filter-search">
+      <span>Search</span>
+      <input type="text" name="q" value="{{ q }}" placeholder="School, program or city…">
+    </label>
+    <label>
+      <span>Country</span>
+      <select name="country">
+        <option value="">All countries</option>
+        {% for c in countries %}
+        <option value="{{ c.id }}" {% if country == c.id|string %}selected{% endif %}>{{ c.flag }} {{ c.name }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label>
+      <span>Study level</span>
+      <select name="level">
+        <option value="">Any level</option>
+        {% for l in LEVELS %}
+        <option {% if level == l %}selected{% endif %}>{{ l }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label>
+      <span>Field</span>
+      <select name="field">
+        <option value="">Any field</option>
+        {% for f in FIELDS %}
+        <option {% if field == f %}selected{% endif %}>{{ f }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label>
+      <span>Budget</span>
+      <select name="budget">
+        <option value="">Any budget</option>
+        {% for value, label in BUDGETS %}
+        <option value="{{ value }}" {% if budget == value %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label>
+      <span>Sort by</span>
+      <select name="sort">
+        <option value="">Name (A–Z)</option>
+        <option value="fee_low" {% if sort == 'fee_low' %}selected{% endif %}>Cheapest first</option>
+        <option value="fee_high" {% if sort == 'fee_high' %}selected{% endif %}>Most expensive first</option>
+      </select>
+    </label>
+    <label class="filter-check">
+      <input type="checkbox" name="scholarship" value="1" {% if scholarship %}checked{% endif %}>
+      <span>Scholarships only</span>
+    </label>
+    <div class="filter-actions">
+      <button class="btn btn-primary" type="submit">Apply filters</button>
+      <a class="btn btn-ghost" href="/explore">Reset</a>
+    </div>
+  </form>
+
+  <div class="explore-meta">
+    <p><strong>{{ results|length }}</strong> school{{ 's' if results|length != 1 }} match
+      {% if active_filters %}your filters:{% else %}. Tweak the filters above to narrow things down.{% endif %}
+    </p>
+    {% if active_filters %}
+    <div class="chips">
+      {% for key, label, _ in active_filters %}
+        <span class="chip">{{ label }} <a href="/explore?{% for k2, l2, _ in active_filters if k2 != key %}{{ k2 }}={{ request.args.get(k2) | urlencode }}&{% endfor %}" aria-label="Remove filter">✕</a></span>
+      {% endfor %}
+      <a class="chip chip-clear" href="/explore">Clear all</a>
+    </div>
+    {% endif %}
+  </div>
+
+  {% if results %}
+  <div class="school-grid explore-grid">
+    {% for s in results %}
+    <a class="school-card reveal" href="/school/{{ s.id }}">
+      <div class="school-card-top">
+        <span class="school-flag">{{ s.flag }}</span>
+        {% if s.scholarships %}<span class="chip chip-gold">Scholarships</span>{% endif %}
+      </div>
+      <h3>{{ s.name }}</h3>
+      <p class="school-loc">📍 {{ s.city }}, {{ s.country_name }} · {{ s.type }}</p>
+      {% if s.ranking %}<p class="school-rank">🏅 {{ s.ranking }}</p>{% endif %}
+      {% if s.levels %}
+      <div class="tag-row">
+        {% for lvl in s.levels.split(',') %}<span class="tag">{{ lvl }}</span>{% endfor %}
+      </div>
+      {% endif %}
+      <div class="school-card-foot">
+        <span class="fee">{% if s.min_fee %}from {{ s.min_fee|usd }}/yr{% else %}tuition-free{% endif %}</span>
+        <span class="pg-count">{{ s.match_count }} matching program{{ 's' if s.match_count != 1 }}</span>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <p class="empty-emoji">🔭</p>
+    <h3>Nothing matches those filters yet</h3>
+    <p>Try widening your budget or removing a filter. Or just <a href="/contact">send us a message</a>: if a school doesn't fit your budget, we'll tell you what does.</p>
+  </div>
+  {% endif %}
+</section>
+
+{% endblock %}

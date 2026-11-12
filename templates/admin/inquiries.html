@@ -1,0 +1,58 @@
+{% extends "admin/base.html" %}
+{% block title %}Inquiries · Admin{% endblock %}
+{% block content %}
+
+<div class="admin-head">
+  <div>
+    <h1>Inquiries</h1>
+    <p>{{ rows|length }} message{{ 's' if rows|length != 1 }}{% if status %} with status “{{ status }}”{% endif %}. Reply by email or WhatsApp. The database just keeps the lead warm.</p>
+  </div>
+</div>
+
+<form class="filter-inline" method="get" action="/admin/inquiries">
+  <label>Filter by status
+    <select name="status" onchange="this.form.submit()">
+      <option value="">All statuses</option>
+      {% for s in STATUSES %}<option {% if status == s %}selected{% endif %}>{{ s }}</option>{% endfor %}
+    </select>
+  </label>
+</form>
+
+{% if rows %}
+<div class="inquiry-list">
+  {% for r in rows %}
+  <article class="inquiry-card">
+    <div class="inquiry-top">
+      <div>
+        <strong>{{ r.name }}</strong>
+        <span class="inquiry-date">{{ r.created_at[:16] }}</span>
+      </div>
+      <span class="status status-{{ r.status|lower }}">{{ r.status }}</span>
+    </div>
+    <p class="inquiry-contact">
+      ✉️ <a href="mailto:{{ r.email }}">{{ r.email }}</a>
+      {% if r.phone %} · 📞 <a href="tel:{{ r.phone.replace(' ', '') }}">{{ r.phone }}</a>{% endif %}
+    </p>
+    <p class="inquiry-intent">
+      {% if r.destination %}Interested in <strong>{{ r.destination }}</strong>{% endif %}{% if r.level %} · <strong>{{ r.level }}</strong>{% endif %}
+    </p>
+    <p class="inquiry-msg">{{ r.message }}</p>
+    <div class="inquiry-actions">
+      <form method="post" action="/admin/inquiries/{{ r.id }}/status" class="inline-form">
+        <select name="status" onchange="this.form.submit()">
+          {% for s in STATUSES %}<option {% if r.status == s %}selected{% endif %}>{{ s }}</option>{% endfor %}
+        </select>
+      </form>
+      <form method="post" action="/admin/inquiries/{{ r.id }}/delete" class="inline-form"
+            onsubmit="return confirm('Delete this inquiry?')">
+        <button class="btn btn-sm btn-danger" type="submit">Delete</button>
+      </form>
+    </div>
+  </article>
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty-state"><h3>No inquiries{% if status %} with this status{% endif %}.</h3></div>
+{% endif %}
+
+{% endblock %}

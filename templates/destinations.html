@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Destinations · {{ agency.name }}{% endblock %}
+{% block content %}
+
+<section class="page-head">
+  <div class="page-head-inner">
+    <p class="section-label">Destinations</p>
+    <h1>{{ rows|length }} countries, each with its own math</h1>
+    <p class="section-sub">Some are about prestige, some about affordability, some about staying after graduation. Pick what matters to you.</p>
+  </div>
+</section>
+
+<section class="section section-flat">
+  <div class="dest-detail-grid">
+    {% for c in rows %}
+    <a class="dest-detail-card reveal" href="/country/{{ c.id }}">
+      <div class="dd-top">
+        <span class="dd-flag">{{ c.flag }}</span>
+        <div>
+          <h3>{{ c.name }}</h3>
+          <p>{{ c.region }} · {{ c.currency }}</p>
+        </div>
+      </div>
+      <p class="dd-desc">{{ c.description[:150] }}{% if c.description|length > 150 %}…{% endif %}</p>
+      <div class="dd-foot">
+        <span>{{ c.school_count }} school{{ 's' if c.school_count != 1 }} · {{ c.program_count }} program{{ 's' if c.program_count != 1 }}</span>
+        <span class="dd-fee">{% if c.min_fee %}from {{ c.min_fee|usd }}/yr{% else %}tuition-free options{% endif %}</span>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+
+{% endblock %}
